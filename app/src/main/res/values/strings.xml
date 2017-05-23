@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Spotify</string>
+    <string name="search_hint">Search Spotify</string>
+    <string name="albums">Albums</string>
+    <string name="artists">Artists</string>
+    <string name="tracks">Tracks</string>
+    <string name="see_all">See all</string>
+    <string name="empty">No results</string>
+    <string name="search_results">Search Spotify by song title, \n artist name, or album name</string>
+    <string name="not_yet">Not yet available</string>
 </resources>

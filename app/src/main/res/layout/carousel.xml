@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="@dimen/art_w"
+    android:layout_height="wrap_content"
+    tools:context="droid.spotify.ui.MainActivity">
+
+    <ImageView
+        android:id="@+id/art"
+        android:layout_width="@dimen/art_w"
+        android:layout_height="@dimen/art_h"
+        android:scaleType="centerCrop"
+        tools:background="@color/content_placeholder"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_width="@dimen/art_w"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:textColor="@android:color/primary_text_light"
+        android:ellipsize="end"
+        android:paddingTop="@dimen/padding_small"
+        tools:text="The Black Ep"/>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="@dimen/art_w"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        tools:text="Interpol"/>
+
+</LinearLayout>
