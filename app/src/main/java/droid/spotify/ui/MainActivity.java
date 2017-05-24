@@ -23,7 +23,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +38,6 @@ import droid.spotify.data.model.Artist;
 import droid.spotify.data.model.ArtistItem;
 import droid.spotify.data.model.Envelop;
 import droid.spotify.data.model.SearchCategory;
-import droid.spotify.data.model.SearchItem;
 import droid.spotify.ui.recycler.CarouselAdapter;
 import droid.spotify.ui.recycler.CarouselMarginDecoration;
 import retrofit2.Call;
@@ -75,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
                 empty.setVisibility(View.VISIBLE);
                 return;
             }
-            adapter.clearItems();
-            adapter.addItems(data);
             empty.setVisibility(View.GONE);
+            adapter = new SearchAdapter(MainActivity.this, data);
+            recyclerView.setAdapter(adapter);
             recyclerView.setVisibility(View.VISIBLE);
         }
 
@@ -95,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
             isLoading = savedInstanceState.getBoolean(BUNDLE_IS_LOADING);
         }
         bind = ButterKnife.bind(this);
-        adapter = new SearchAdapter(this);
-        recyclerView.setAdapter(adapter);
         setupSearchView();
     }
 
@@ -165,25 +164,22 @@ public class MainActivity extends AppCompatActivity {
     static class SearchAdapter extends RecyclerView.Adapter<CarouselCategoryHolder> {
         private final int sideMargin;
 
-        private List<SearchCategory> items;
+        private final List<SearchCategory> items;
         private final LayoutInflater inflater;
+        private Map<SearchCategory, CarouselAdapter> adapters = new HashMap<>();
 
-        SearchAdapter(Context context) {
+        SearchAdapter(Context context, List<SearchCategory> items) {
             final Resources res = context.getResources();
-            items = new ArrayList<>();
             inflater = LayoutInflater.from(context);
             sideMargin = res.getDimensionPixelOffset(R.dimen.carousel_margin);
+            this.items = items == null ? new ArrayList<SearchCategory>() : items;
+            setupSearchCategoryAdapters(context, adapters);
         }
 
-        private void addItems(List<SearchCategory> newItems) {
-            final int insertRangeStart = getDataItemCount();
-            items.addAll(newItems);
-            notifyItemRangeInserted(insertRangeStart, newItems.size());
-        }
-
-        void clearItems() {
-            items = new ArrayList<>();
-            notifyDataSetChanged();
+        private void setupSearchCategoryAdapters(Context context, Map<SearchCategory, CarouselAdapter> adapters) {
+            for (SearchCategory sc : items) {
+                adapters.put(sc, new CarouselAdapter(context, sc.items));
+            }
         }
 
         @Override
@@ -203,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(CarouselCategoryHolder holder, int position) {
-            holder.bind(items.get(position));
+            bindCarousel(holder, items.get(position));
         }
 
         @Override
@@ -219,6 +215,11 @@ public class MainActivity extends AppCompatActivity {
         int getDataItemCount() {
             return items.size();
         }
+
+        private void bindCarousel(CarouselCategoryHolder holder, SearchCategory category) {
+            holder.title.setText(category.title);
+            holder.recyclerView.setAdapter(adapters.get(category));
+        }
     }
 
     static class CarouselCategoryHolder extends RecyclerView.ViewHolder {
@@ -233,12 +234,6 @@ public class MainActivity extends AppCompatActivity {
             super(itemView);
             ButterKnife.bind(this, itemView);
             recyclerView.addItemDecoration(decoration);
-        }
-
-        void bind(SearchCategory<SearchItem> category) {
-            title.setText(category.title);
-            List<SearchItem> items = category.items;
-            recyclerView.setAdapter(new CarouselAdapter(itemView.getContext(), items));
         }
     }
 
