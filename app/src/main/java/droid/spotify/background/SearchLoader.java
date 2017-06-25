@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import droid.spotify.SpotifyApplication;
 import droid.spotify.data.api.SpotifyService;
 import droid.spotify.data.model.Album;
 import droid.spotify.data.model.AlbumItem;
@@ -26,18 +29,20 @@ public class SearchLoader extends AbstractAsyncTaskLoader<List<SearchCategory>> 
     private static final String TAG = SearchLoader.class.getSimpleName();
     public static final int LOADER_ID = 1251;
 
+    @Inject
+    SpotifyService service;
+
     private final String albumsTitle;
     private final String artistsTitle;
-    private final String search;
     private final Call<Envelop> call;
 
     public SearchLoader(Context context, Bundle args) {
         super(context);
         final Resources resources = context.getResources();
+        SpotifyApplication.get(context).getComponent().inject(this);
         albumsTitle = resources.getString(R.string.albums);
         artistsTitle = resources.getString(R.string.artists);
-        this.search = args.getString(BUNDLE_KEY_SEARCH);
-        this.call = SpotifyService.getInstance().search(search);
+        call = service.search(args.getString(BUNDLE_KEY_SEARCH));
     }
 
     @VisibleForTesting
