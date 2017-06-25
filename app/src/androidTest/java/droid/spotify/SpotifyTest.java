@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import droid.spotify.background.SearchLoader;
 import droid.spotify.data.api.SpotifyService;
 import droid.spotify.data.model.AlbumItem;
 import droid.spotify.data.model.ArtistItem;
@@ -20,7 +21,6 @@ import droid.spotify.data.model.Envelop;
 import droid.spotify.data.model.HasImages;
 import droid.spotify.data.model.Image;
 import droid.spotify.data.model.SearchCategory;
-import droid.spotify.ui.MainActivity;
 
 import static org.junit.Assert.*;
 
@@ -118,7 +118,7 @@ public class SpotifyTest {
     @Test
     public void searchLoader() {
         Context context = InstrumentationRegistry.getTargetContext();
-        MainActivity.SearchLoader loader = new MainActivity.SearchLoader(context);
+        SearchLoader loader = new SearchLoader(context);
         Envelop envelop = TestUtils.createEnvelop();
         List<SearchCategory> categories = loader.createCategoriesForTest(envelop);
         Assert.assertTrue(categories.size() == 2);
