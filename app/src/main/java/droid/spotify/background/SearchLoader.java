@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.spotify.R;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import retrofit2.Call;
 
 public class SearchLoader extends AbstractAsyncTaskLoader<List<SearchCategory>> {
     private static final String BUNDLE_KEY_SEARCH = "BUNDLE_KEY_SEARCH";
+    private static final String TAG = SearchLoader.class.getSimpleName();
     public static final int LOADER_ID = 1251;
 
     private final String albumsTitle;
@@ -49,6 +51,7 @@ public class SearchLoader extends AbstractAsyncTaskLoader<List<SearchCategory>> 
             final Envelop envelop = call.execute().body();
             return createCategories(envelop);
         } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
             return new ArrayList<>();
         }
     }
