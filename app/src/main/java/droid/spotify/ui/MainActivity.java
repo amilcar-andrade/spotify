@@ -23,7 +23,7 @@ import droid.spotify.background.SearchLoader;
 import droid.spotify.data.model.SearchCategory;
 import droid.spotify.ui.recycler.SearchAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<SearchCategory>> {
     private static final String BUNDLE_SEARCH_KEY = "BUNDLE_SEARCH_KEY";
     private static final String BUNDLE_IS_LOADING = "BUNDLE_IS_LOADING";
 
@@ -43,30 +43,6 @@ public class MainActivity extends AppCompatActivity {
     SearchAdapter adapter;
     Unbinder bind;
 
-    private LoaderManager.LoaderCallbacks<List<SearchCategory>> callbacks = new LoaderManager.LoaderCallbacks<List<SearchCategory>>() {
-        @Override
-        public Loader<List<SearchCategory>> onCreateLoader(int id, Bundle args) {
-            return new SearchLoader(MainActivity.this, args);
-        }
-
-        @Override
-        public void onLoadFinished(Loader<List<SearchCategory>> loader, List<SearchCategory> data) {
-            isLoading = false;
-            progress.setVisibility(View.GONE);
-            if (data.isEmpty()) {
-                empty.setVisibility(View.VISIBLE);
-                return;
-            }
-            empty.setVisibility(View.GONE);
-            adapter = new SearchAdapter(MainActivity.this, data);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<List<SearchCategory>> loader) {
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +67,29 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString(BUNDLE_SEARCH_KEY, query);
         outState.putBoolean(BUNDLE_IS_LOADING, isLoading);
+    }
+
+    @Override
+    public Loader<List<SearchCategory>> onCreateLoader(int id, Bundle args) {
+        return new SearchLoader(MainActivity.this, args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<SearchCategory>> loader, List<SearchCategory> data) {
+        isLoading = false;
+        progress.setVisibility(View.GONE);
+        if (data.isEmpty()) {
+            empty.setVisibility(View.VISIBLE);
+            return;
+        }
+        empty.setVisibility(View.GONE);
+        adapter = new SearchAdapter(MainActivity.this, data);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<SearchCategory>> loader) {
     }
 
     private void setupSearchView() {
@@ -135,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
 
         showLoading();
         if (TextUtils.equals(query, this.query)) {
-            getSupportLoaderManager().initLoader(SearchLoader.LOADER_ID, SearchLoader.createBundle(query), callbacks);
+            getSupportLoaderManager().initLoader(SearchLoader.LOADER_ID, SearchLoader.createBundle(query), this);
         } else {
-            getSupportLoaderManager().restartLoader(SearchLoader.LOADER_ID, SearchLoader.createBundle(query), callbacks);
+            getSupportLoaderManager().restartLoader(SearchLoader.LOADER_ID, SearchLoader.createBundle(query), this);
         }
         this.query = query;
     }
